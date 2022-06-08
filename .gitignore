@@ -1,0 +1,5 @@
+*.swp
+*.ipynb_checkpoints/
+*.vscode/
+*.mypy_cache/
+*.DS_Store

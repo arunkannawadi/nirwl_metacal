@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+# Change directory to the project root directory.
+cd "$(dirname "$0")"
+
+# Run mypy in the poetry environment.
+poetry run mypy --package nirwl_metacal || mypy --package nirwl_metacal # --namespace-packages
+
+# Switch back to the previous directory.
+cd -
+
+# Source: https://jaredkhan.com/blog/mypy-pre-commit#step-3-giving-the-mypy-hook-access-to-dependencies

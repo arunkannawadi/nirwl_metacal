@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "nirwl_metacal"
+version = "0.1.0"
+description = ""
+authors = ["arunkannawadi <arunkannawadi@astro.princeton.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+photutils = "^1.4.0"
+fire = "^0.4.0"
+GalSim = "^2.3.4"
+ngmix = {git = "https://github.com/arunkannawadi/ngmix"}
+PyYAML = "^6.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^22.3.0"
+pre-commit = "^2.19.0"
+mypy = "^0.961"
+flake8 = "^4.0.1"
+
+# This config is duplicate of .flake8
+# This is here for when we move to flake8-pyproject
+[tool.flake8]
+max-line-length = 110
+max-doc-length = 79
+
+[tool.black]
+line-length = 110
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git*         # root of the project
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | \.vscode
+  )/
+)
+'''
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "astropy.*",
+    "fire",
+    "galsim",
+    "ngmix",
+    "photutils",
+    "yaml",
+]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
