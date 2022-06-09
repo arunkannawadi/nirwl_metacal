@@ -25,6 +25,7 @@ class MetacalCatalogGenerator:
         config: Optional[str] = None,
         drizzle_image: Optional[str] = None,
         drizzle_weight: Optional[str] = None,
+        noise_rms_map: Optional[str] = None,
         seg_map: Optional[str] = None,
         sep_cat: Optional[str] = None,
         psf_images: Optional[str] = None,
@@ -44,6 +45,9 @@ class MetacalCatalogGenerator:
         self.drizzle_weight_path = (
             drizzle_weight if drizzle_weight else self.config.get("inputs", {}).get("drizzle_weight")
         )
+        self.noise_rms_map_path = (
+            noise_rms_map if noise_rms_map else self.config.get("inputs", {}).get("noise_rms_map")
+        )
         self.seg_map_path = seg_map if seg_map else self.config.get("inputs", {}).get("seg_map")
         self.sep_cat_path = sep_cat if sep_cat else self.config.get("inputs", {}).get("sep_cat")
         self.psf_images_path = psf_images if psf_images else self.config.get("inputs", {}).get("psf_images")
@@ -51,26 +55,26 @@ class MetacalCatalogGenerator:
         for filepath in (
             "drizzle_image",
             "drizzle_weight",
+            "noise_rms_map",
             "seg_map",
             "sep_cat",
             "psf_images",
         ):
             try:
-                assert os.path.exists(filepath + "_path")
+                if not os.path.exists(filename := getattr(self, filepath + "_path")):
+                    raise ValueError(filename + f" was specified as '{filepath}' and it was not found. ")
             except TypeError:
                 self.logger.error(
                     "%s must be specified either in the config file or via command-line", filepath
                 )
-                raise ValueError(
+                raise FileNotFoundError(
                     "%s must be specified either in the config file or via command-line" % filepath
                 )
-            except AssertionError as e:
-                self.logger.error(e)
-                raise e
 
         # Type hints only. These will be populated by the load_all method.
         self.drizzle_image: galsim.Image
         self.drizzle_weight: galsim.Image
+        self.noise_rms_map: galsim.Image
         self.seg_map: photutils.SegmentationImage
         self.sep_cat: fits.fitsrec.FITS_rec
         self.psf_images: List[galsim.Image]
@@ -111,6 +115,7 @@ class MetacalCatalogGenerator:
         """
         assert self.drizzle_image.array.shape == self.drizzle_weight.array.shape
         assert self.drizzle_image.array.shape == self.seg_map.shape
+        assert self.drizzle_image.array.shape == self.noise_rms_map.array.shape
         assert len(self.psf_images) == self.sep_cat.size
         self.logger.info("ALl is well")
 
@@ -119,6 +124,7 @@ class MetacalCatalogGenerator:
         for attr in (
             "drizzle_image",
             "drizzle_weight",
+            "noise_rms_map",
         ):
             try:
                 hdu_list = fits.open(getattr(self, attr + "_path"))
