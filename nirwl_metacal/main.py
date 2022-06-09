@@ -12,8 +12,6 @@ __all__ = [
     "MetacalCatalogGenerator",
 ]
 
-logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
-
 
 class MetacalCatalogGenerator:
     """
@@ -31,6 +29,7 @@ class MetacalCatalogGenerator:
         psf_images: Optional[str] = None,
         output_cat: Optional[str] = None,
         overwrite: Optional[bool] = None,
+        log_file: Optional[str] = None,
         seed: Optional[int] = 1357,
         weight_fwhm=None,
     ):
@@ -39,7 +38,10 @@ class MetacalCatalogGenerator:
         self.config_path = config
 
         self.logger = logging.getLogger()  # root logger
-        self.logger.setLevel(self.config.get("logging", {}).get("level", logging.INFO))
+        if log_file is None:
+            log_file = self.config.get("logging", {}).get("log_file", None)
+        if log_file is not None:
+            self._setup_logger(log_file=log_file)
 
         self.drizzle_image_path = (
             drizzle_image if drizzle_image else self.config.get("inputs", {}).get("drizzle_image")
@@ -116,6 +118,19 @@ class MetacalCatalogGenerator:
             config: Mapping[str, Any] = yaml.safe_load(f)
         return config
 
+    def _setup_logger(self, log_file: str):
+        logging_level = self.config.get("logging", {}).get("level", logging.INFO)
+        logging_format = self.config.get("logging", {}).get(
+            "format", "%(asctime)s %(levelname)s: %(message)s"
+        )
+        logging_formatter = logging.Formatter(logging_format)
+
+        self.logger.info("Logging to %s", log_file)
+        fh = logging.FileHandler(log_file)
+        fh.setLevel(logging_level)
+        fh.setFormatter(logging_formatter)
+        self.logger.addHandler(fh)
+
     def validate(self):
         """
         Validate that the inputs are sensible
@@ -190,4 +205,5 @@ class MetacalCatalogGenerator:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s", level=logging.INFO)
     fire.Fire(MetacalCatalogGenerator)

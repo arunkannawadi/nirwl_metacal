@@ -16,5 +16,6 @@ outputs:
 
 # Everything that follows are completely optional.
 logging:
-  level: INFO
-  filename:
+  level: INFO  # Logging level for both streaming and file
+  log_file:  # File to write logs into.
+  format: "%(asctime)s %{levelname}s %(message)s"  # Format string for the file only
