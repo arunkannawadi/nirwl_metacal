@@ -29,6 +29,8 @@ class MetacalCatalogGenerator:
         seg_map: Optional[str] = None,
         sep_cat: Optional[str] = None,
         psf_images: Optional[str] = None,
+        output_cat: Optional[str] = None,
+        overwrite: Optional[bool] = None,
         seed: Optional[int] = 1357,
         weight_fwhm=None,
     ):
@@ -51,6 +53,17 @@ class MetacalCatalogGenerator:
         self.seg_map_path = seg_map if seg_map else self.config.get("inputs", {}).get("seg_map")
         self.sep_cat_path = sep_cat if sep_cat else self.config.get("inputs", {}).get("sep_cat")
         self.psf_images_path = psf_images if psf_images else self.config.get("inputs", {}).get("psf_images")
+
+        self.output_cat_path = output_cat if output_cat else self.config.get("outputs", {}).get("output_cat")
+        self.overwrite = (
+            overwrite if overwrite is not None else self.config.get("outputs", {}).get("overwrite", False)
+        )
+
+        if self.output_cat_path is None:
+            raise ValueError("output_cat is required")
+        if self.overwrite is False:
+            if os.path.exists(self.output_cat_path):
+                raise FileExistsError(f"Output file {self.output_cat_path} already exists")
 
         for filepath in (
             "drizzle_image",
