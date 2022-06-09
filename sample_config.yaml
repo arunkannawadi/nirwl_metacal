@@ -1,0 +1,20 @@
+name: sample
+description: |
+  This is a sample config, with all possible parameters exposed.
+  The only mandatory config options are the ones in inputs and outputs sections.
+  The remaining sections are optional, and sensible defaults are used in the code.
+inputs:
+  drizzle_image:  # Path to the mosaic image (mandatory)
+  drizzle_weight: # Path to the weight image (mandatory)
+  noise_rms_map:  # Path to the noise rms image (mandatory)
+  seg_map:  # Path to the segmentation map (mandatory)
+  sep_cat:  # Path to the SExtractor detection catalog (mandatory)
+  psf_images:  # Path to the PSF image cube (mandatory)
+outputs:
+  output_cat:  # Name of the output catalog (with extension and path; mandatory)
+  overwrite: False  # Overwrite the output file
+
+# Everything that follows are completely optional.
+logging:
+  level: INFO
+  filename:
