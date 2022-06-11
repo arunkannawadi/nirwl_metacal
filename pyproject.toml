@@ -11,7 +11,6 @@ fire = "^0.4.0"
 GalSim = "^2.3.4"
 ngmix = {git = "https://github.com/arunkannawadi/ngmix"}
 PyYAML = "^6.0"
-pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -19,6 +18,7 @@ black = "^22.3.0"
 pre-commit = "^2.19.0"
 mypy = "^0.961"
 flake8 = "^4.0.1"
+pytest-cov = "^3.0.0"
 
 # This config is duplicate of .flake8
 # This is here for when we move to flake8-pyproject
