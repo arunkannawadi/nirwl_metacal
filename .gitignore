@@ -1,6 +1,7 @@
 *.swp
 *.ipynb_checkpoints/
 *.vscode/
+*.code-workspace
 *.mypy_cache/
 *.DS_Store
 *.log

@@ -11,6 +11,7 @@ fire = "^0.4.0"
 GalSim = "^2.3.4"
 ngmix = {git = "https://github.com/arunkannawadi/ngmix"}
 PyYAML = "^6.0"
+pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
