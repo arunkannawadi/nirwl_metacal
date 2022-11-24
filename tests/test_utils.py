@@ -13,7 +13,8 @@ from nirwl_metacal.utils import expand_bbox
 )
 def test_expand_bbox(corners: Tuple[int]):
     bbox = galsim.BoundsD(*corners)
-    expanded_bbox = expand_bbox(bbox)
+    mosaic_bbox = galsim.BoundsI(-100, 100, -100, 100)
+    expanded_bbox = expand_bbox(bbox, mosaic_bbox)
     # Check that the expanded bbox completely includes the bbox
     assert expanded_bbox.includes(bbox)
     # Check that the min_size is obeyed.
@@ -33,12 +34,13 @@ def test_expand_bbox(corners: Tuple[int]):
 
 @pytest.mark.parametrize(
     "center",
-    [(15.8, 15.2), (16.2, 16.7), (55.1, 58.9)],
+    [(15.8, 15.2), (16.2, 16.7)],
 )
 def test_expand_bbox_with_center(center: Tuple[int]):
     center = galsim.PositionD(center)
+    mosaic_bbox = galsim.BoundsI(-100, 100, -100, 100)
     bbox = galsim.BoundsI(xmin=1, xmax=31, ymin=1, ymax=31)
-    expanded_bbox = expand_bbox(bbox, center=center)
+    expanded_bbox = expand_bbox(bbox, mosaic_bbox, center=center)
     # Check that the expanded bbox completely includes the bbox.
     assert expanded_bbox.includes(bbox)
     # Check that the min_size is obeyed.
@@ -48,3 +50,21 @@ def test_expand_bbox_with_center(center: Tuple[int]):
     assert nx == int(nx)
     ny = np.log2(expanded_bbox.ymax - expanded_bbox.ymin + 1)
     assert ny == int(ny)
+
+
+@pytest.mark.parametrize(
+    "bbox",
+    [
+        galsim.BoundsI(xmin=47, xmax=54, ymin=32, ymax=39),  # well inside the mosaic box
+        galsim.BoundsI(xmin=32, xmax=48, ymin=2, ymax=8),  # close to the bottom edge
+        galsim.BoundsI(xmin=44, xmax=58, ymin=90, ymax=98),  # close to the top edge
+        galsim.BoundsI(xmin=5, xmax=21, ymin=30, ymax=64),  # close to the left edge
+        galsim.BoundsI(xmin=2, xmax=10, ymin=91, ymax=98),  # close to a corners
+    ],
+)
+def test_expand_bbox_corner_cases(bbox: galsim.BoundsI):
+    mosaic_bbox = galsim.BoundsI(0, 100, 0, 100)
+    expanded_bbox = expand_bbox(bbox, mosaic_bbox)
+    # Check that the bbox  <- expanded bbox <- mosaic_bbox.
+    assert expanded_bbox.includes(bbox)
+    assert mosaic_bbox.includes(expanded_bbox)
