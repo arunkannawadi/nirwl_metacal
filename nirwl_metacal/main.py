@@ -1,12 +1,16 @@
 import logging
 import os
-from typing import Any, List, Mapping, Optional
+from typing import Any, List, Mapping, Optional, Sequence
 
 import fire
 import galsim
+# from .metacal import MetacalRecordGenerator
+import metacal
+import numpy as np
 import photutils
 import yaml
 from astropy.io import fits
+from metacal_record import MetacalRecord
 
 __all__ = [
     "MetacalCatalogGenerator",
