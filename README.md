@@ -5,7 +5,13 @@
 
 Shear measurement pipeline using metacal for HST NIR weak lensing project.
 
+## Running the code
 
+This package is managed by `poetry`.
+To run the code, you can
+```bash
+poetry run python nirwl_metacal/main.py run --config config.yml
+```
 ## Acknowledgement
 
 This work was supported by NASA grant HST-AR-16138.010-A.
