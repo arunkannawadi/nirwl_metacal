@@ -5,12 +5,14 @@ description = ""
 authors = ["arunkannawadi <arunkannawadi@astro.princeton.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 photutils = "^1.4.0"
 fire = "^0.4.0"
 GalSim = "^2.3.4"
 ngmix = {git = "https://github.com/arunkannawadi/ngmix"}
 PyYAML = "^6.0"
+numba = "^0.55.2"
+scipy = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
