@@ -200,12 +200,45 @@ class MetacalCatalogGenerator:
             if hdu_list is not None:
                 hdu_list.close()
 
+    def _make_catalog(self, record_list: Sequence[MetacalRecord]):
+        """Make a catalog of metacal results"""
+
+        dtypes = record_list[0].dtypes()
+        recarray = np.rec.array(record_list, dtype=dtypes)
+
+        # cols = [fits.Column(name=k, array=recarray[k], format="K") for k, _ in dtypes]
+        # hdu = fits.BinTableHDU.from_columns(cols)
+        hdu = fits.BinTableHDU(data=recarray)
+        hdu.writeto(self.output_cat_path, overwrite=True)
+
+    def measure(self):
+        for n in range(0, len(self.sep_cat)):
+            sep_rec = self.sep_cat[n]
+            rec_id: int = sep_rec["ID"]  # type: ignore
+            bbox = self.seg_map.bbox[rec_id - 1]
+            bbox = galsim.BoundsI(xmin=bbox.ixmin, xmax=bbox.ixmax, ymin=bbox.iymin, ymax=bbox.iymax)
+
+            rec = self.rec_gen.measure(
+                n,
+                self.drizzle_image,  # [bbox],
+                self.drizzle_weight,  # [bbox],
+                self.noise_rms_map,  # [bbox],
+                galsim.Image(self.seg_map.data),  # [bbox],
+                bbox,
+                sep_rec,
+                self.psf_images[n],
+            )
+            yield rec
+
     def run(self):
         """
         Run the metacal catalog generation
         """
         self.load_all()
         self.validate()
+        self.rec_gen = metacal.MetacalRecordGenerator(self.config["measurement"])
+        rec_gen = self.measure()
+        self._make_catalog(list(rec_gen))
 
 
 if __name__ == "__main__":
